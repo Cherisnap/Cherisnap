@@ -6,19 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>사진 저장 및 공유</title>
     <link rel="stylesheet" href="photostyle3.css" />
-    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
-        integrity="sha384-kontUMEqQ6Pj8CmsDmoaBFBLfPbbY2/LDhQVJ/JlgkK5X/YpWMXF+BmwO8b/6T0s"
-        crossorigin="anonymous"></script>
-    <script>
-        Kakao.init('4562d8687925d5be5ff9e64cfaad4cb5');
-        console.log("카카오 SDK 초기화 상태:", Kakao.isInitialized());
-    </script>
 </head>
 
 <body>
     <div id="container">
         <div class="white-box"></div>
-        <!-- 프레임 이미지는 캔버스에서 이미 포함되어 있으니 별도 표시 안 함 -->
         <div class="circle"></div>
         <div class="text save">이미지 저장</div>
         <div class="text share">공유하기</div>
@@ -26,7 +18,6 @@
 
         <img class="icon save-icon" src="img/down.png" alt="다운로드 아이콘" id="downloadIcon" />
         <img class="icon circle2" src="img/url.png" alt="URL 복사 아이콘" id="urlIcon" />
-        <img class="icon circle3" src="img/kakao.png" alt="카카오톡 아이콘" id="kakaoIcon" />
     </div>
 
     <script>
@@ -34,7 +25,6 @@
             const finalPhotoStrip = document.getElementById('finalPhotoStrip');
             const downloadIcon = document.getElementById('downloadIcon');
             const urlIcon = document.getElementById('urlIcon');
-            const kakaoIcon = document.getElementById('kakaoIcon');
 
             let finalImageSrc = '';
 
@@ -58,7 +48,6 @@
                     finalPhotoStrip.src = "https://placehold.co/285x850?text=No+Photos";
                 }
             }
-
 
             // 다운로드
             downloadIcon.addEventListener('click', () => {
@@ -88,44 +77,6 @@
                     console.error('클립보드 복사 실패:', err);
                     alert("URL 복사에 실패했습니다. 브라우저 설정에서 클립보드 접근을 허용해주세요.");
                 }
-            });
-
-            // 카카오톡 공유
-            kakaoIcon.addEventListener('click', () => {
-                if (!Kakao.isInitialized()) {
-                    alert('카카오톡 SDK가 초기화되지 않았습니다. 개발자 키를 확인해주세요.');
-                    return;
-                }
-                if (!finalImageSrc) {
-                    alert("공유할 이미지가 없습니다.");
-                    return;
-                }
-
-                // 실제 서버 업로드 URL로 대체 필요
-                const imageUrlForKakao = "https://example.com/your_uploaded_image.png";
-                const linkToShare = window.location.href;
-
-                Kakao.Share.sendDefault({
-                    objectType: 'feed',
-                    content: {
-                        title: '나만의 네컷 사진',
-                        description: '체리 스냅에서 만든 특별한 네컷 사진을 공유합니다!',
-                        imageUrl: imageUrlForKakao,
-                        link: {
-                            mobileWebUrl: linkToShare,
-                            webUrl: linkToShare,
-                        },
-                    },
-                    buttons: [
-                        {
-                            title: '사진 보러가기',
-                            link: {
-                                mobileWebUrl: linkToShare,
-                                webUrl: linkToShare,
-                            },
-                        },
-                    ],
-                });
             });
 
             loadFinalPhoto();

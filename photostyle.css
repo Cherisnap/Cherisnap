@@ -38,7 +38,6 @@ body {
   /* overlay는 video 위에 */
   pointer-events: none;
   display: none;
-  /* JS에서 보여줄 때 block으로 */
 }
 
 
@@ -119,14 +118,3 @@ body {
   color: black;
   z-index: 3;
 }
-
-/* 기존 .main-box는 .photo가 직접 영역을 차지하므로 필요없다면 제거 */
-/* .main-box {
-    width: 1032px;
-    height: 827px;
-    background: white;
-    position: absolute;
-    left: 204px;
-    top: 86px;
-    z-index: 0;
-} */
