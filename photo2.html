@@ -83,52 +83,66 @@
 
         // 캔버스에 4장 사진과 프레임 합성 함수
         async function createCompositeImage(photoUrls) {
-            const canvasWidth = 285.63;
-            const canvasHeight = 850.25;
+            const canvasWidth = 241;
+            const canvasHeight = 718;
             const canvas = document.createElement("canvas");
             canvas.width = canvasWidth;
             canvas.height = canvasHeight;
             const ctx = canvas.getContext("2d");
 
-            // 배경 하얀색으로 초기화
+            // 배경 흰색으로 초기화
             ctx.fillStyle = "#FFFFFF";
             ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-            const padding = 10;
-            const spacing = 10;
-            const totalHeight = canvasHeight - padding * 2 - spacing * 3;
-            const singleHeight = totalHeight / 4;
+            const framePhotoPositions = [
+                { x: 19, y: 40 },
+                { x: 19, y: 205 },
+                { x: 19, y: 370 },
+                { x: 19, y: 536 }
+            ];
 
-            // 사진 4장 그리기
+            const targetWidth = 203;
+            const targetHeight = 163;
+
             for (let i = 0; i < photoUrls.length; i++) {
                 const img = new Image();
-                img.crossOrigin = "anonymous"; // CORS 문제 방지용 (필요시)
+                img.crossOrigin = "anonymous";
                 img.src = photoUrls[i];
                 await new Promise(resolve => (img.onload = resolve));
 
-                const aspectRatio = img.width / img.height;
-                let drawWidth = singleHeight * aspectRatio;
-                let drawHeight = singleHeight;
+                // 이미지 비율 유지하면서 target 크기에 맞게 crop 또는 fit
+                const imgAspect = img.width / img.height;
+                const targetAspect = targetWidth / targetHeight;
 
-                if (drawWidth > canvasWidth - padding * 2) {
-                    drawWidth = canvasWidth - padding * 2;
-                    drawHeight = drawWidth / aspectRatio;
+                let sx, sy, sw, sh;
+
+                if (imgAspect > targetAspect) {
+                    // 이미지가 더 가로로 길면 좌우 자르기
+                    sh = img.height;
+                    sw = sh * targetAspect;
+                    sx = (img.width - sw) / 2;
+                    sy = 0;
+                } else {
+                    // 이미지가 더 세로로 길면 상하 자르기
+                    sw = img.width;
+                    sh = sw / targetAspect;
+                    sx = 0;
+                    sy = (img.height - sh) / 2;
                 }
 
-                const drawX = padding + (canvasWidth - padding * 2 - drawWidth) / 2;
-                const drawY = padding + i * (singleHeight + spacing) + (singleHeight - drawHeight) / 2;
-
-                ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+                const { x, y } = framePhotoPositions[i];
+                ctx.drawImage(img, sx, sy, sw, sh, x, y, targetWidth, targetHeight);
             }
 
-            // 프레임 이미지 덮어쓰기 - 이게 프레임 포함시키는 핵심!
+            // 프레임 덧씌우기
             const frameImg = new Image();
             frameImg.src = "img/frame_black2.png";
             await new Promise(resolve => (frameImg.onload = resolve));
             ctx.drawImage(frameImg, 0, 0, canvasWidth, canvasHeight);
 
-            return canvas.toDataURL("image/jpeg", 0.7);
+            return canvas.toDataURL("image/jpeg", 0.9);
         }
+
 
 
         document.getElementById("next-button").addEventListener("click", async () => {
